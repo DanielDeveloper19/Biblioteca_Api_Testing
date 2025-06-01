@@ -53,12 +53,7 @@ bookAactualizar = Book.builder().titulo("El Cabrón").autor("Camilo").anioDePubl
         verify(bookRepository, times(1)).save(book);
     }
 
-    @Test
-    void createBook_WhenBookIsNull_ThrowsException() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> bookService.createBook(null));
-        verify(bookRepository, never()).save(any()); // Asegura que no se llama al repositorio
-    }
+
 
     @Test
     void createBook_WhenRepositoryFails_ThrowsException() {
@@ -78,37 +73,19 @@ bookAactualizar = Book.builder().titulo("El Cabrón").autor("Camilo").anioDePubl
         // Assert
         verify(bookRepository, times(1)).save(book);}
 
+   @Test
+   public void createBook_WhenBookIsNull_ThrowsIllegalArgumentException() {
+
+    assertThrows(IllegalArgumentException.class, () -> bookService.createBook(null));
+
+   }
+
 
     //Hasta aquí los test del create
 
-    @Test
-    public void updateBook_WhenIdAndBookAreNull_ThrowsException() {
-
-    assertThrows(IllegalArgumentException.class, () -> bookService.updateBook(null, null));
-        verify(bookRepository, never()).save(any()); // Asegura que no se llama al repositorio
-
-    }
 
     @Test
-    public void updateBook_WhenIdIsNull_ThrowsException() {
-
-        assertThrows(IllegalArgumentException.class, () -> bookService.updateBook(null, bookAactualizar));
-        verify(bookRepository, never()).save(any()); // Asegura que no se llama al repositorio
-
-    }
-
-    @Test
-    public void updateBook_BookIsNull_ThrowsException() {
-
-    Long id = 1L;
-
-        assertThrows(IllegalArgumentException.class, () -> bookService.updateBook(id, null));
-        verify(bookRepository, never()).save(any()); // Asegura que no se llama al repositorio
-
-    }
-
-    @Test
-    public void updateBook_WhenBookIsNull_SavesBook() {
+    public void updateBook_WhenBookIsNotFoundInBd_SavesBook() {
 
     when(bookRepository.findById(anyLong())).thenReturn(java.util.Optional.empty());
 
@@ -119,17 +96,20 @@ bookAactualizar = Book.builder().titulo("El Cabrón").autor("Camilo").anioDePubl
         verify(bookRepository, times(1)).save(bookAactualizar);}
 
     @Test
-    public void updateBook_WhenBookIsNotNull_UpdatesBook() {
+    public void updateBook_WhenBookBDIsPresent_UpdatesBook() {
         Long id = 1L;
         // 1. Libro existente (simulado en la BD)
         Book libroExistente = new Book();
         libroExistente.setId(id);
-        libroExistente.setTitulo("Título original");
+        libroExistente.setTitulo("Titulo original");
         libroExistente.setAutor("Autor original");
+        libroExistente.setAnioDePublicacion(2023);
+        libroExistente.setStock(10);
+
 
         // 2. Datos de actualización (solo algunos campos)
         Book datosActualizados = new Book();
-        datosActualizados.setTitulo("Título nuevo");  // Campo modificado
+        datosActualizados.setTitulo("Titulo nuevo");  // Campo modificado
         datosActualizados.setAutor(null);            // Campo no modificado
 
         // 3. Simulamos que findById devuelve el libro existente
@@ -143,9 +123,11 @@ bookAactualizar = Book.builder().titulo("El Cabrón").autor("Camilo").anioDePubl
         verify(bookRepository, times(1)).save(libroExistente);
 
         // - Que los campos se actualizaron correctamente
-        assertEquals("Título nuevo", libroExistente.getTitulo());  // Campo actualizado
+        assertEquals("Titulo nuevo", libroExistente.getTitulo());  // Campo actualizado
         assertEquals("Autor original", libroExistente.getAutor());                    // Campo no modificado
     }
+
+
 
     //hasta aquí los test del update
 

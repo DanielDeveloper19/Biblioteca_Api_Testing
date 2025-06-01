@@ -34,11 +34,16 @@ bookRepository.save(book);
     @Override
     public void updateBook(Long id, Book book) {
 
-        if(id == null || book == null){
-            throw new IllegalArgumentException("El id o el libro no pueden ser nulos");
-        }
 
         Book bookEncontrado = bookRepository.findById(id).orElse(null);
+
+try {
+    if (book.getStock() < 0 || book.getAnioDePublicacion() < 0) {
+        throw new IllegalArgumentException("Los campos de stock y anio de publicación no pueden ser negativos");
+    }
+}catch (NullPointerException e){}
+
+
 
         if (bookEncontrado != null) {
 
@@ -51,12 +56,18 @@ bookRepository.save(book);
             if(book.getAnioDePublicacion() != null){
                 bookEncontrado.setAnioDePublicacion(book.getAnioDePublicacion());
             }
-            if(book.getStock() != null){
+            if(book.getStock() != null ){
+
                 bookEncontrado.setStock(book.getStock());
             }
 
             bookRepository.save(bookEncontrado);
         } else {
+
+            //Tendría que testear todos estos caminos
+            if (book.getTitulo().isBlank() || book.getAutor().isBlank() || book.getAnioDePublicacion() == null || book.getStock() == null){
+                throw new IllegalArgumentException("si el libro no existe debe tener todos sus campos completos para poder ser guardado como un libro nuevo");
+            }
             bookRepository.save(book);
         }
 

@@ -41,7 +41,7 @@ return ResponseEntity.internalServerError().build();
 }
 }
 
-@GetMapping("/book/id")
+@GetMapping("/book/id/{id}" )
     public ResponseEntity<?> getBookById(@PathVariable Long id) {
 
     Optional<Book> book = bookService.getBookById(id);
@@ -93,7 +93,11 @@ return ResponseEntity.internalServerError().build();
 }
 
 @PutMapping("/book/update")
-    public ResponseEntity<?> updateBook(@RequestBody BookDTO bookDTO) {
+    public ResponseEntity<?> updateBook( @RequestBody BookDTO bookDTO) {
+
+    if(bookDTO.getId() == null ){
+        return ResponseEntity.badRequest().build();
+    }
 
     try{
         bookService.updateBook(bookDTO.getId(), Book.builder()
@@ -115,11 +119,9 @@ return ResponseEntity.internalServerError().build();
 @DeleteMapping("/book/delete/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable Long id) {
 
-    if(id != null){
         bookService.deleteBook(id);
         return ResponseEntity.ok().build();
-    }
-return ResponseEntity.badRequest().build();
+
 }
 
 

@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -29,6 +30,7 @@ public class Book {
 
     private Integer anioDePublicacion;
 
+    @Min(value = 0, message = "El stock no puede ser negativo")
      private Integer stock;
 
 
